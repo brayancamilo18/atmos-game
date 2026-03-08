@@ -114,7 +114,7 @@
     if (!leaderboardList) return;
 
     try {
-      const res = await apiFetch(`/api/leaderboard?game=${encodeURIComponent(GAME_NAME)}&limit=10`);
+      const res = await apiFetch(`/api/leaderboard?game=${encodeURIComponent(GAME_NAME)}&limit=7`);
       if (!res.ok) {
         leaderboardList.innerHTML = `<div class="leaderboard-empty">No se pudo cargar.</div>`;
         return;
@@ -165,7 +165,7 @@
   }
 
   async function submitScore() {
-    if (!game || !game.over || scoreAlreadySent || !IS_AUTHENTICATED) return;
+    if (!game || !game.over || scoreAlreadySent) return;
 
     scoreAlreadySent = true;
 

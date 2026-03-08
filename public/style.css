@@ -1,81 +1,154 @@
+/* =========================================================
+   Atmos Jump - Game styles (Bootstrap-friendly)
+   Goals:
+   - Responsive layout (Bootstrap grid)
+   - Game fits in viewport (reduce need for scroll)
+   - DO NOT affect gameplay fluidity:
+     * Keep canvas internal resolution (width/height attrs in HTML)
+     * Only scale visually with CSS
+   ========================================================= */
+
 * {
   box-sizing: border-box;
 }
 
+:root {
+  --radius-lg: 22px;
+  --radius-md: 16px;
+
+  --bg-top: #1e2a55;
+  --bg-mid: #0d1226;
+  --bg-bottom: #060913;
+
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.10);
+
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-border: rgba(255, 255, 255, 0.08);
+
+  --text-muted: rgba(255, 255, 255, 0.65);
+
+  --accent: #7c5cff;
+  --accent-2: #6e4dff;
+  --accent-shadow: rgba(124, 92, 255, 0.35);
+
+  /* Reserve space for header + padding + hint + gaps.
+     If you still see scroll, reduce this slightly. */
+  --ui-reserved: 220px;
+
+  /* Max visual width for the canvas on desktop */
+  --canvas-max-w: 460px;
+}
+
+html,
 body {
+  height: 100%;
+}
+
+body.game-bg {
   margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  background:
-    radial-gradient(circle at top, #1e2a55 0%, #0d1226 45%, #060913 100%);
   color: #fff;
-  min-height: 100vh;
+  background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bottom) 100%);
+
+  min-height: 100dvh;
+  overflow-x: hidden;
+
+  /* Do NOT force overflow hidden on Y; allow scroll if absolutely needed */
+  overflow-y: auto;
+}
+
+/* Branding dot (same style as home) */
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.18);
+  display: inline-block;
+}
+
+/* Match Bootstrap primary to theme */
+.btn-primary {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 10px 24px var(--accent-shadow);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--accent-2) !important;
+  border-color: var(--accent-2) !important;
+}
+
+/* Glass surfaces */
+.game-card,
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+/* Canvas wrapper */
+.canvas-wrap {
   display: grid;
   place-items: center;
-  padding: 10px;
 }
 
-.page-shell {
-  width: min(96vw, 980px);
-  display: grid;
-  grid-template-columns: minmax(320px, 460px) minmax(260px, 320px);
-  gap: 18px;
-  align-items: start;
-}
-
-.game-shell {
-  width: min(96vw, 460px);
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.topbar h1 {
-  margin: 0;
-  font-size: 24px;
-}
-
-button {
-  border: 0;
-  background: #7c5cff;
-  color: white;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(124, 92, 255, 0.35);
-}
-
-.hint {
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: #b9c4ff;
-}
-
-canvas {
-  width: 100%;
-  height: auto;
+/* =========================================================
+   CANVAS: Do not change internal resolution (keeps gameplay)
+   - Internal: width="420" height="720" in HTML
+   - Visual scaling only: fit to viewport by HEIGHT
+   ========================================================= */
+#game {
   display: block;
+
+  /* Keep exact proportions */
+  aspect-ratio: 420 / 720;
+
+  /* Fit to viewport height so it usually doesn't need scroll */
+  max-height: calc(100dvh - var(--ui-reserved));
+
+  /* Also limit by column width */
+  max-width: min(100%, var(--canvas-max-w));
+
+  /* Width follows height via aspect ratio (no distortion) */
+  width: auto;
+  height: auto;
+
   background: linear-gradient(to bottom, #8fd3ff 0%, #d9f1ff 100%);
-  border: 2px solid rgba(255,255,255,0.12);
-  border-radius: 18px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+  /* Keep touch + pointer interactions correct */
   touch-action: none;
 }
 
+/* If screen height is small, reserve less space so canvas can grow */
+@media (max-height: 820px) {
+  :root {
+    --ui-reserved: 190px;
+  }
+}
+
+@media (max-height: 720px) {
+  :root {
+    --ui-reserved: 165px;
+  }
+}
+
+/* Mobile controls */
 .mobile-controls {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-top: 14px;
 }
 
 .touch-btn {
-  font-size: 28px;
-  padding: 16px 0;
+  font-size: 26px;
+  padding: 12px 0;
   border-radius: 16px;
   user-select: none;
   -webkit-user-select: none;
@@ -87,34 +160,29 @@ canvas {
   filter: brightness(1.1);
 }
 
-.leaderboard-panel {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+/* Hide touch buttons on desktop */
+@media (min-width: 992px) {
+  .mobile-controls {
+    display: none;
+  }
 }
 
-.leaderboard-panel h2 {
-  margin: 0 0 12px;
-  font-size: 20px;
-}
-
-.leaderboard-user {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 14px;
+/* Stats / leaderboard */
+.stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
   padding: 12px;
-  margin-bottom: 12px;
 }
 
-.leaderboard-user div {
+.stat-label {
   font-size: 12px;
-  color: #b9c4ff;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
-.leaderboard-user strong {
+.stat-value {
+  font-weight: 800;
   font-size: 16px;
 }
 
@@ -129,13 +197,13 @@ canvas {
   gap: 10px;
   align-items: center;
   padding: 12px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
 }
 
 .leaderboard-rank {
-  font-weight: 800;
+  font-weight: 900;
   color: #ffd166;
 }
 
@@ -151,31 +219,8 @@ canvas {
 
 .leaderboard-empty {
   padding: 14px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.04);
-  color: #b9c4ff;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.leaderboard-note {
-  margin: 12px 0 0;
-  font-size: 13px;
-  color: #b9c4ff;
-}
-
-@media (max-width: 899px) {
-  .page-shell {
-    width: min(96vw, 460px);
-    grid-template-columns: 1fr;
-  }
-
-  .leaderboard-panel {
-    order: 2;
-  }
-}
-
-@media (min-width: 900px) {
-  .mobile-controls {
-    display: none;
-  }
+  border-radius: var(--radius-md);
+  background: var(--card-bg);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--card-border);
 }

@@ -1,146 +1,99 @@
-* {
-    box-sizing: border-box;
+/* Keep CSS minimal: Bootstrap does most of the work */
+.home-bg {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #24346d 0%, #101735 45%, #070b16 100%);
+  color: #fff;
 }
 
-body {
-    margin: 0;
-    font-family: Inter, Arial, sans-serif;
-    color: #fff;
-    min-height: 100vh;
-    background: radial-gradient(
-        circle at top,
-        #24346d 0%,
-        #101735 45%,
-        #070b16 100%
-    );
-    display: grid;
-    place-items: center;
-    padding: 16px;
+.letter-space {
+  letter-spacing: 0.12em;
 }
 
-.home-shell {
-    width: min(100%, 920px);
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #7c5cff;
+  box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.18);
+  display: inline-block;
 }
 
 .hero-card {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 32px;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
 }
 
-.eyebrow {
-    margin: 0 0 8px;
-    color: #9fb7ff;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  color: #fff;
 }
 
-h1 {
-    margin: 0;
-    font-size: clamp(38px, 8vw, 64px);
-    line-height: 0.95;
+.icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(124, 92, 255, 0.18);
+  border: 1px solid rgba(124, 92, 255, 0.25);
 }
 
-.lead {
-    margin: 18px 0 0;
-    max-width: 680px;
-    color: #d7e0ff;
-    font-size: 18px;
-    line-height: 1.6;
+.icon-badge i {
+  font-size: 20px;
 }
 
-.actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    margin-top: 28px;
+.mini-feature {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px;
+  height: 100%;
 }
 
-.btn {
-    text-decoration: none;
-    color: white;
-    padding: 13px 18px;
-    border-radius: 14px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.mini-feature-title {
+  font-weight: 700;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+.mini-feature-text {
+  font-size: 13px;
+  opacity: 0.75;
 }
 
 .btn-primary {
-    background: #7c5cff;
-    box-shadow: 0 10px 24px rgba(124, 92, 255, 0.35);
+  background-color: #7c5cff;
+  border-color: #7c5cff;
+  box-shadow: 0 10px 24px rgba(124, 92, 255, 0.35);
 }
 
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #6e4dff;
+  border-color: #6e4dff;
 }
 
-.text-link {
-    color: #c9d7ff;
-    text-decoration: none;
-    font-weight: 600;
+.form-control {
+  border-radius: 14px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
 }
 
-.button-link {
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    font: inherit;
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.55);
 }
 
-.feature-list {
-    margin-top: 30px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-}
-
-.feature {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 16px;
-    padding: 16px;
-}
-
-.feature strong {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 16px;
-}
-
-.feature span {
-    color: #c6d2ff;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-@media (max-width: 720px) {
-    .hero-card {
-        padding: 22px;
-    }
-
-    .lead {
-        font-size: 16px;
-    }
-
-    .feature-list {
-        grid-template-columns: 1fr;
-    }
-
-    .actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .btn {
-        width: 100%;
-    }
+.form-control:focus {
+  border-color: rgba(124, 92, 255, 0.65);
+  box-shadow: 0 0 0 0.25rem rgba(124, 92, 255, 0.25);
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
 }

@@ -16,21 +16,37 @@
   --radius-lg: 22px;
   --radius-md: 16px;
 
-  --bg-top: #1e2a55;
-  --bg-mid: #0d1226;
-  --bg-bottom: #060913;
+  /* =========================================================
+     Theme palette
+     ========================================================= */
+  --brand-1: #227c9d; /* Azul */
+  --brand-2: #17c3b2; /* Turquesa */
+  --brand-3: #ffcb77; /* Amarillo */
+  --brand-4: #fef9ef; /* Crema */
+  --brand-5: #fe6d73; /* Coral */
 
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.10);
+  /* Backgrounds (dark, but tinted to brand) */
+  --bg-top: #0f2b3a;     /* tinted from brand-1 */
+  --bg-mid: #071821;
+  --bg-bottom: #040c11;
 
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-border: rgba(255, 255, 255, 0.08);
+  /* Glass surfaces */
+  --glass-bg: rgba(254, 249, 239, 0.06);      /* crema */
+  --glass-border: rgba(254, 249, 239, 0.14);
 
-  --text-muted: rgba(255, 255, 255, 0.65);
+  --card-bg: rgba(254, 249, 239, 0.04);
+  --card-border: rgba(254, 249, 239, 0.10);
 
-  --accent: #7c5cff;
-  --accent-2: #6e4dff;
-  --accent-shadow: rgba(124, 92, 255, 0.35);
+  --text-muted: rgba(254, 249, 239, 0.70);
+
+  /* Bootstrap primary mapping */
+  --accent: var(--brand-2); /* Turquesa */
+  --accent-2: #12ad9f;      /* darker turquesa for hover */
+  --accent-shadow: rgba(23, 195, 178, 0.35);
+
+  /* Secondary highlight */
+  --warn: var(--brand-3);    /* Amarillo */
+  --danger: var(--brand-5);  /* Coral */
 
   /* Reserve space for header + padding + hint + gaps.
      If you still see scroll, reduce this slightly. */
@@ -47,13 +63,10 @@ body {
 
 body.game-bg {
   margin: 0;
-  color: #fff;
+  color: var(--brand-4);
   background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bottom) 100%);
-
   min-height: 100dvh;
   overflow-x: hidden;
-
-  /* Do NOT force overflow hidden on Y; allow scroll if absolutely needed */
   overflow-y: auto;
 }
 
@@ -63,7 +76,7 @@ body.game-bg {
   height: 12px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.18);
+  box-shadow: 0 0 0 6px rgba(23, 195, 178, 0.18);
   display: inline-block;
 }
 
@@ -71,6 +84,7 @@ body.game-bg {
 .btn-primary {
   background-color: var(--accent) !important;
   border-color: var(--accent) !important;
+  color: #042022 !important;
   box-shadow: 0 10px 24px var(--accent-shadow);
 }
 
@@ -78,6 +92,19 @@ body.game-bg {
 .btn-primary:focus {
   background-color: var(--accent-2) !important;
   border-color: var(--accent-2) !important;
+  color: #042022 !important;
+}
+
+/* A nicer outline-light on dark bg */
+.btn-outline-light {
+  color: var(--brand-4) !important;
+  border-color: rgba(254, 249, 239, 0.30) !important;
+}
+
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+  background: rgba(254, 249, 239, 0.12) !important;
+  border-color: rgba(254, 249, 239, 0.45) !important;
 }
 
 /* Glass surfaces */
@@ -117,8 +144,9 @@ body.game-bg {
   width: auto;
   height: auto;
 
+  /* IMPORTANT: keep canvas look as-is (do not theme gameplay) */
   background: linear-gradient(to bottom, #8fd3ff 0%, #d9f1ff 100%);
-  border: 2px solid rgba(255, 255, 255, 0.14);
+  border: 2px solid rgba(254, 249, 239, 0.14);
   border-radius: var(--radius-lg);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 
@@ -157,7 +185,7 @@ body.game-bg {
 
 .touch-btn:active {
   transform: scale(0.98);
-  filter: brightness(1.1);
+  filter: brightness(1.05);
 }
 
 /* Hide touch buttons on desktop */
@@ -186,6 +214,7 @@ body.game-bg {
   font-size: 16px;
 }
 
+/* Leaderboard */
 .leaderboard-list {
   display: grid;
   gap: 10px;
@@ -204,7 +233,7 @@ body.game-bg {
 
 .leaderboard-rank {
   font-weight: 900;
-  color: #ffd166;
+  color: var(--warn);
 }
 
 .leaderboard-name {
@@ -214,13 +243,18 @@ body.game-bg {
 }
 
 .leaderboard-height {
-  color: #7dd3fc;
+  color: var(--brand-2);
 }
 
 .leaderboard-empty {
   padding: 14px;
   border-radius: var(--radius-md);
   background: var(--card-bg);
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(254, 249, 239, 0.78);
   border: 1px solid var(--card-border);
+}
+
+/* Optional: make "danger" bits use coral (if you use .text-danger etc) */
+.text-danger {
+  color: var(--danger) !important;
 }

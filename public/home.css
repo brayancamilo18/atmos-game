@@ -1,8 +1,28 @@
 /* Keep CSS minimal: Bootstrap does most of the work */
+
+:root {
+  --home-brand-1: #227c9d; /* Azul */
+  --home-brand-2: #17c3b2; /* Turquesa */
+  --home-brand-3: #ffcb77; /* Amarillo */
+  --home-brand-4: #fef9ef; /* Crema */
+  --home-brand-5: #fe6d73; /* Coral */
+
+  --home-bg-top: #0f2b3a;
+  --home-bg-mid: #071821;
+  --home-bg-bottom: #040c11;
+
+  --home-glass-bg: rgba(254, 249, 239, 0.06);
+  --home-glass-border: rgba(254, 249, 239, 0.14);
+
+  --home-accent: var(--home-brand-2);
+  --home-accent-2: #12ad9f;
+  --home-accent-shadow: rgba(23, 195, 178, 0.35);
+}
+
 .home-bg {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #24346d 0%, #101735 45%, #070b16 100%);
-  color: #fff;
+  background: radial-gradient(circle at top, var(--home-bg-top) 0%, var(--home-bg-mid) 45%, var(--home-bg-bottom) 100%);
+  color: var(--home-brand-4);
 }
 
 .letter-space {
@@ -13,26 +33,26 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #7c5cff;
-  box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.18);
+  background: var(--home-accent);
+  box-shadow: 0 0 0 6px rgba(23, 195, 178, 0.18);
   display: inline-block;
 }
 
 .hero-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--home-glass-bg);
+  border: 1px solid var(--home-glass-border);
   border-radius: 24px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(8px);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--home-glass-bg);
+  border: 1px solid var(--home-glass-border);
   border-radius: 20px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(8px);
-  color: #fff;
+  color: var(--home-brand-4);
 }
 
 .icon-badge {
@@ -41,8 +61,8 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: rgba(124, 92, 255, 0.18);
-  border: 1px solid rgba(124, 92, 255, 0.25);
+  background: rgba(23, 195, 178, 0.16);
+  border: 1px solid rgba(23, 195, 178, 0.26);
 }
 
 .icon-badge i {
@@ -50,8 +70,8 @@
 }
 
 .mini-feature {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(254, 249, 239, 0.04);
+  border: 1px solid rgba(254, 249, 239, 0.10);
   border-radius: 16px;
   padding: 12px;
   height: 100%;
@@ -65,35 +85,48 @@
 
 .mini-feature-text {
   font-size: 13px;
-  opacity: 0.75;
+  opacity: 0.78;
 }
 
 .btn-primary {
-  background-color: #7c5cff;
-  border-color: #7c5cff;
-  box-shadow: 0 10px 24px rgba(124, 92, 255, 0.35);
+  background-color: var(--home-accent);
+  border-color: var(--home-accent);
+  color: #042022;
+  box-shadow: 0 10px 24px var(--home-accent-shadow);
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
-  background-color: #6e4dff;
-  border-color: #6e4dff;
+  background-color: var(--home-accent-2);
+  border-color: var(--home-accent-2);
+  color: #042022;
+}
+
+.btn-outline-light {
+  color: var(--home-brand-4);
+  border-color: rgba(254, 249, 239, 0.30);
+}
+
+.btn-outline-light:hover,
+.btn-outline-light:focus {
+  background: rgba(254, 249, 239, 0.12);
+  border-color: rgba(254, 249, 239, 0.45);
 }
 
 .form-control {
   border-radius: 14px;
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(254, 249, 239, 0.20);
   background: rgba(0, 0, 0, 0.18);
-  color: #fff;
+  color: var(--home-brand-4);
 }
 
 .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(254, 249, 239, 0.60);
 }
 
 .form-control:focus {
-  border-color: rgba(124, 92, 255, 0.65);
-  box-shadow: 0 0 0 0.25rem rgba(124, 92, 255, 0.25);
+  border-color: rgba(23, 195, 178, 0.65);
+  box-shadow: 0 0 0 0.25rem rgba(23, 195, 178, 0.20);
   background: rgba(0, 0, 0, 0.18);
-  color: #fff;
+  color: var(--home-brand-4);
 }

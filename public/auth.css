@@ -1,0 +1,140 @@
+/* Auth pages theme (register/login/forgot/etc)
+   Uses palette:
+   227C9D, 17C3B2, FFCB77, FEF9EF, FE6D73
+*/
+
+:root {
+    --brand-1: #227c9d;
+    --brand-2: #17c3b2;
+    --brand-3: #ffcb77;
+    --brand-4: #fef9ef;
+    --brand-5: #fe6d73;
+
+    --bg-top: #0f2b3a;
+    --bg-mid: #071821;
+    --bg-bottom: #040c11;
+
+    --glass-bg: rgba(254, 249, 239, 0.06);
+    --glass-border: rgba(254, 249, 239, 0.14);
+
+    --text-muted: rgba(254, 249, 239, 0.75);
+
+    --accent: var(--brand-2);
+    --accent-2: #12ad9f;
+    --accent-shadow: rgba(23, 195, 178, 0.35);
+
+    --danger: var(--brand-5);
+}
+
+.auth-bg {
+    min-height: 100vh;
+    color: var(--brand-4);
+    background: radial-gradient(
+        circle at top,
+        var(--bg-top) 0%,
+        var(--bg-mid) 45%,
+        var(--bg-bottom) 100%
+    );
+}
+
+.brand-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 6px rgba(23, 195, 178, 0.18);
+    display: inline-block;
+}
+
+.auth-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--brand-4);
+}
+
+.auth-muted {
+    color: var(--text-muted);
+}
+
+.auth-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    padding: 22px;
+}
+
+/* Link style inside auth card */
+.auth-card a {
+    color: var(--brand-3);
+}
+
+.auth-card a:hover {
+    color: var(--brand-4);
+}
+
+/* Inputs */
+.auth-input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(254, 249, 239, 0.22);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--brand-4);
+    padding: 10px 12px;
+    outline: none;
+}
+
+.auth-input::placeholder {
+    color: rgba(254, 249, 239, 0.6);
+}
+
+.auth-input:focus {
+    border-color: rgba(23, 195, 178, 0.65);
+    box-shadow: 0 0 0 0.25rem rgba(23, 195, 178, 0.2);
+}
+
+/* Labels */
+.auth-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(254, 249, 239, 0.9);
+}
+
+/* Primary button */
+.auth-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+
+    background: var(--accent);
+    color: #042022;
+    box-shadow: 0 10px 24px var(--accent-shadow);
+    transition:
+        transform 120ms ease,
+        filter 120ms ease;
+}
+
+.auth-btn:hover,
+.auth-btn:focus {
+    background: var(--accent-2);
+    transform: translateY(-1px);
+    filter: brightness(1.02);
+}
+
+/* Errors */
+.auth-error {
+    color: var(--danger);
+}

@@ -11,54 +11,52 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $stats = null;
-        $game = 'atmos-jump';
+        $game = $request->query('game', 'atmos-jump');
 
-        if (Auth::check()) {
-            $userId = Auth::id();
+        // Si NO está logueado, no mostramos stats (solo dejamos la home normal)
+        if (!Auth::check()) {
+            return view('home', [
+                'topNumber' => null,
+                'partidasJugadas' => 0,
+                'mejorPartida' => null,
+            ]);
+        }
 
-            // Mejor registro del usuario
-            $best = Score::query()
-                ->where('user_id', $userId)
-                ->where('game', $game)
-                ->orderByDesc('height')
-                ->first();
+        $userId = Auth::id();
 
-            // "Partidas jugadas" (según registros guardados)
-            $gamesPlayed = Score::query()
-                ->where('user_id', $userId)
-                ->where('game', $game)
-                ->count();
+        $partidasJugadas = Score::query()
+            ->where('game', $game)
+            ->where('user_id', $userId)
+            ->count();
+        
 
-            // Ranking total: 1 + cantidad de jugadores con mejor best_height que el tuyo
-            $myBestHeight = (int) ($best?->height ?? 0);
+        $mejorPartida = Score::query()
+            ->where('game', $game)
+            ->where('user_id', $userId)
+            ->orderByDesc('height')
+            ->first();
 
-            if ($myBestHeight > 0) {
-                // Subquery: best height por player_key (usuarios y guests)
-                $rank = DB::query()
-                    ->fromSub(function ($q) use ($game) {
-                        $q->from('scores')
-                            ->selectRaw("COALESCE(CAST(user_id AS CHAR), CONCAT('guest:', player_name)) as player_key")
-                            ->selectRaw("MAX(height) as best_height")
-                            ->where('game', $game)
-                            ->groupBy('player_key');
-                    }, 'lb')
-                    ->where('best_height', '>', $myBestHeight)
-                    ->count() + 1;
-            } else {
-                $rank = null; // si no tienes récord todavía
-            }
+        $myBestHeight = (int) ($mejorPartida?->height ?? 0);
 
-            $stats = [
-                'rank' => $rank, // null si no hay score
-                'games_played' => $gamesPlayed,
-                'best_height' => (int) ($best?->height ?? 0),
-                'best_score' => (int) ($best?->score ?? 0),
-            ];
+        $topNumber = null;
+        if ($myBestHeight > 0) {
+            // rank = 1 + cantidad de players con best_height mayor al mío
+            $topNumber = DB::query()
+                ->fromSub(function ($q) use ($game) {
+                    $q->from('scores')
+                        ->selectRaw("COALESCE(CAST(user_id AS CHAR), CONCAT('guest:', player_name)) as player_key")
+                        ->selectRaw("MAX(height) as best_height")
+                        ->where('game', $game)
+                        ->groupBy('player_key');
+                }, 'lb')
+                ->where('best_height', '>', $myBestHeight)
+                ->count() + 1;
         }
 
         return view('home', [
-            'homeStats' => $stats,
+            'topNumber' => $topNumber,
+            'partidasJugadas' => $partidasJugadas,
+            'mejorPartida' => $mejorPartida,
         ]);
     }
 }

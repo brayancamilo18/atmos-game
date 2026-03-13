@@ -9,118 +9,123 @@
    ========================================================= */
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 :root {
-  --radius-lg: 22px;
-  --radius-md: 16px;
+    --radius-lg: 22px;
+    --radius-md: 16px;
 
-  /* =========================================================
+    /* =========================================================
      Theme palette
      ========================================================= */
-  --brand-1: #227c9d; /* Azul */
-  --brand-2: #17c3b2; /* Turquesa */
-  --brand-3: #ffcb77; /* Amarillo */
-  --brand-4: #fef9ef; /* Crema */
-  --brand-5: #fe6d73; /* Coral */
+    --brand-1: #227c9d; /* Azul */
+    --brand-2: #17c3b2; /* Turquesa */
+    --brand-3: #ffcb77; /* Amarillo */
+    --brand-4: #fef9ef; /* Crema */
+    --brand-5: #fe6d73; /* Coral */
 
-  /* Backgrounds (dark, but tinted to brand) */
-  --bg-top: #0f2b3a;     /* tinted from brand-1 */
-  --bg-mid: #071821;
-  --bg-bottom: #040c11;
+    /* Backgrounds (dark, but tinted to brand) */
+    --bg-top: #0f2b3a; /* tinted from brand-1 */
+    --bg-mid: #071821;
+    --bg-bottom: #040c11;
 
-  /* Glass surfaces */
-  --glass-bg: rgba(254, 249, 239, 0.06);      /* crema */
-  --glass-border: rgba(254, 249, 239, 0.14);
+    /* Glass surfaces */
+    --glass-bg: rgba(254, 249, 239, 0.06); /* crema */
+    --glass-border: rgba(254, 249, 239, 0.14);
 
-  --card-bg: rgba(254, 249, 239, 0.04);
-  --card-border: rgba(254, 249, 239, 0.10);
+    --card-bg: rgba(254, 249, 239, 0.04);
+    --card-border: rgba(254, 249, 239, 0.1);
 
-  --text-muted: rgba(254, 249, 239, 0.70);
+    --text-muted: rgba(254, 249, 239, 0.7);
 
-  /* Bootstrap primary mapping */
-  --accent: var(--brand-2); /* Turquesa */
-  --accent-2: #12ad9f;      /* darker turquesa for hover */
-  --accent-shadow: rgba(23, 195, 178, 0.35);
+    /* Bootstrap primary mapping */
+    --accent: var(--brand-2); /* Turquesa */
+    --accent-2: #12ad9f; /* darker turquesa for hover */
+    --accent-shadow: rgba(23, 195, 178, 0.35);
 
-  /* Secondary highlight */
-  --warn: var(--brand-3);    /* Amarillo */
-  --danger: var(--brand-5);  /* Coral */
+    /* Secondary highlight */
+    --warn: var(--brand-3); /* Amarillo */
+    --danger: var(--brand-5); /* Coral */
 
-  /* Reserve space for header + padding + hint + gaps.
+    /* Reserve space for header + padding + hint + gaps.
      If you still see scroll, reduce this slightly. */
-  --ui-reserved: 220px;
+    --ui-reserved: 220px;
 
-  /* Max visual width for the canvas on desktop */
-  --canvas-max-w: 460px;
+    /* Max visual width for the canvas on desktop */
+    --canvas-max-w: 460px;
 }
 
 html,
 body {
-  height: 100%;
+    height: 100%;
 }
 
 body.game-bg {
-  margin: 0;
-  color: var(--brand-4);
-  background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bottom) 100%);
-  min-height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
+    margin: 0;
+    color: var(--brand-4);
+    background: radial-gradient(
+        circle at top,
+        var(--bg-top) 0%,
+        var(--bg-mid) 45%,
+        var(--bg-bottom) 100%
+    );
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* Branding dot (same style as home) */
 .brand-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 6px rgba(23, 195, 178, 0.18);
-  display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 6px rgba(23, 195, 178, 0.18);
+    display: inline-block;
 }
 
 /* Match Bootstrap primary to theme */
 .btn-primary {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: #042022 !important;
-  box-shadow: 0 10px 24px var(--accent-shadow);
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #042022 !important;
+    box-shadow: 0 10px 24px var(--accent-shadow);
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
-  background-color: var(--accent-2) !important;
-  border-color: var(--accent-2) !important;
-  color: #042022 !important;
+    background-color: var(--accent-2) !important;
+    border-color: var(--accent-2) !important;
+    color: #042022 !important;
 }
 
 /* A nicer outline-light on dark bg */
 .btn-outline-light {
-  color: var(--brand-4) !important;
-  border-color: rgba(254, 249, 239, 0.30) !important;
+    color: var(--brand-4) !important;
+    border-color: rgba(254, 249, 239, 0.3) !important;
 }
 
 .btn-outline-light:hover,
 .btn-outline-light:focus {
-  background: rgba(254, 249, 239, 0.12) !important;
-  border-color: rgba(254, 249, 239, 0.45) !important;
+    background: rgba(254, 249, 239, 0.12) !important;
+    border-color: rgba(254, 249, 239, 0.45) !important;
 }
 
 /* Glass surfaces */
 .game-card,
 .glass-panel {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(8px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(8px);
 }
 
 /* Canvas wrapper */
 .canvas-wrap {
-  display: grid;
-  place-items: center;
+    display: grid;
+    place-items: center;
 }
 
 /* =========================================================
@@ -129,132 +134,148 @@ body.game-bg {
    - Visual scaling only: fit to viewport by HEIGHT
    ========================================================= */
 #game {
-  display: block;
+    display: block;
 
-  /* Keep exact proportions */
-  aspect-ratio: 420 / 720;
+    /* Keep exact proportions */
+    aspect-ratio: 420 / 720;
 
-  /* Fit to viewport height so it usually doesn't need scroll */
-  max-height: calc(100dvh - var(--ui-reserved));
+    /* Fit to viewport height so it usually doesn't need scroll */
+    max-height: calc(100dvh - var(--ui-reserved));
 
-  /* Also limit by column width */
-  max-width: min(100%, var(--canvas-max-w));
+    /* Also limit by column width */
+    max-width: min(100%, var(--canvas-max-w));
 
-  /* Width follows height via aspect ratio (no distortion) */
-  width: auto;
-  height: auto;
+    /* Width follows height via aspect ratio (no distortion) */
+    width: auto;
+    height: auto;
 
-  /* IMPORTANT: keep canvas look as-is (do not theme gameplay) */
-  background: linear-gradient(to bottom, #8fd3ff 0%, #d9f1ff 100%);
-  border: 2px solid rgba(254, 249, 239, 0.14);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    /* IMPORTANT: keep canvas look as-is (do not theme gameplay) */
+    background: linear-gradient(to bottom, #8fd3ff 0%, #d9f1ff 100%);
+    border: 2px solid rgba(254, 249, 239, 0.14);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 
-  /* Keep touch + pointer interactions correct */
-  touch-action: none;
+    /* Keep touch + pointer interactions correct */
+    touch-action: none;
 }
 
 /* If screen height is small, reserve less space so canvas can grow */
 @media (max-height: 820px) {
-  :root {
-    --ui-reserved: 190px;
-  }
+    :root {
+        --ui-reserved: 190px;
+    }
 }
 
 @media (max-height: 720px) {
-  :root {
-    --ui-reserved: 165px;
-  }
+    :root {
+        --ui-reserved: 165px;
+    }
 }
 
 /* Mobile controls */
 .mobile-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
 
 .touch-btn {
-  font-size: 26px;
-  padding: 12px 0;
-  border-radius: 16px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
+    font-size: 26px;
+    padding: 12px 0;
+    border-radius: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
 .touch-btn:active {
-  transform: scale(0.98);
-  filter: brightness(1.05);
+    transform: scale(0.98);
+    filter: brightness(1.05);
 }
 
 /* Hide touch buttons on desktop */
 @media (min-width: 992px) {
-  .mobile-controls {
-    display: none;
-  }
+    .mobile-controls {
+        display: none;
+    }
 }
 
 /* Stats / leaderboard */
 .stat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-md);
-  padding: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 12px;
 }
 
 .stat-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
 }
 
 .stat-value {
-  font-weight: 800;
-  font-size: 16px;
+    font-weight: 800;
+    font-size: 16px;
 }
 
 /* Leaderboard */
 .leaderboard-list {
-  display: grid;
-  gap: 10px;
+    display: grid;
+    gap: 10px;
 }
 
 .leaderboard-item {
-  display: grid;
-  grid-template-columns: 48px 1fr auto;
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  border-radius: var(--radius-md);
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
 }
 
 .leaderboard-rank {
-  font-weight: 900;
-  color: var(--warn);
+    font-weight: 900;
+    color: var(--warn);
 }
 
 .leaderboard-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .leaderboard-height {
-  color: var(--brand-2);
+    color: var(--brand-2);
 }
 
 .leaderboard-empty {
-  padding: 14px;
-  border-radius: var(--radius-md);
-  background: var(--card-bg);
-  color: rgba(254, 249, 239, 0.78);
-  border: 1px solid var(--card-border);
+    padding: 14px;
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    color: rgba(254, 249, 239, 0.78);
+    border: 1px solid var(--card-border);
 }
 
 /* Optional: make "danger" bits use coral (if you use .text-danger etc) */
 .text-danger {
-  color: var(--danger) !important;
+    color: var(--danger) !important;
+}
+
+/* =========================================================
+   IMPORTANT: Disable selection / highlight on game UI
+   - Fixes mobile double-tap selection and panel highlighting
+   ========================================================= */
+#gameApp,
+#gameApp * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Let buttons still feel clickable, but avoid weird gestures */
+#gameApp {
+    touch-action: manipulation;
 }

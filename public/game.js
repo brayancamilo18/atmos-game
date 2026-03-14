@@ -112,15 +112,14 @@
   }
 
   /* ===========================
-     NEW: Tilt controls for mobile
-     - Uses DeviceOrientation (gamma) to compute left/right input.
-     - Request permission on iOS when needed.
-     - Exposes API: window.tiltControls.init(), .calibrate(), .isEnabled(), .getTiltX()
-     - getTiltX() -> -1..1 (left..right)
+     Tilt controls for mobile (improved)
+     - init() waits for first DeviceOrientation sample (or times out)
+     - calibrate averages a few samples for stable center
+     - API: init(), calibrate(), stop(), isEnabled(), getTiltX()
      =========================== */
   (function () {
-    const MAX_TILT_ANGLE = 28; // grados que representan valor -1..1
-    const SMOOTHING = 0.12; // low-pass filter factor
+    const MAX_TILT_ANGLE = 28; // grados para mapear -1..1
+    const SMOOTHING = 0.12; // filtro low-pass
     const IOS_PERMISSION_REQUIRED =
       typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function";
@@ -131,9 +130,44 @@
       detectPlatform() === "mobile";
     let baselineGamma = 0;
     let filteredGamma = 0;
-    let lastGamma = 0;
+    let lastGamma = null;
     let listening = false;
 
+    let firstSampleResolve = null;
+    let firstSampleTimer = null;
+
+    function handleOrientation(event) {
+      const gamma = typeof event.gamma === "number" ? event.gamma : null;
+      if (gamma === null) return;
+      lastGamma = gamma;
+      filteredGamma = filteredGamma + (gamma - filteredGamma) * SMOOTHING;
+
+      // resolve waiting promise for init once we have a numeric sample
+      if (firstSampleResolve) {
+        firstSampleResolve(gamma);
+        firstSampleResolve = null;
+        if (firstSampleTimer) {
+          clearTimeout(firstSampleTimer);
+          firstSampleTimer = null;
+        }
+      }
+    }
+
+    function addListener() {
+      if (!listening) {
+        window.addEventListener("deviceorientation", handleOrientation, true);
+        listening = true;
+      }
+    }
+
+    function removeListener() {
+      if (listening) {
+        window.removeEventListener("deviceorientation", handleOrientation, true);
+        listening = false;
+      }
+    }
+
+    // init: request permission if required, attach listener and wait for first sample (or timeout)
     function initMobileTilt() {
       return new Promise(async (resolve) => {
         if (!isMobile) {
@@ -144,64 +178,106 @@
 
         if (IOS_PERMISSION_REQUIRED) {
           try {
-            const result = await DeviceOrientationEvent.requestPermission();
-            if (result !== "granted") {
-              console.warn("Permiso DeviceOrientation denegado");
+            const resp = await DeviceOrientationEvent.requestPermission();
+            if (resp !== "granted") {
+              console.warn("DeviceOrientation permission denied");
               enabled = false;
               resolve(false);
               return;
             }
           } catch (err) {
-            console.warn("Error pidiendo permiso DeviceOrientation:", err);
+            console.warn("DeviceOrientation permission error", err);
             enabled = false;
             resolve(false);
             return;
           }
         }
 
-        if (!listening) {
-          window.addEventListener("deviceorientation", handleOrientation, true);
-          listening = true;
-          enabled = true;
+        // attach listener and wait for first reading (to avoid calibrating to 0)
+        addListener();
+        // small safety: start filteredGamma with lastGamma if available
+        if (typeof lastGamma === "number") filteredGamma = lastGamma;
+
+        // Create a promise that resolves when first sample arrives or after timeout
+        const samplePromise = new Promise((res) => {
+          // if we already have a sample, resolve immediately
+          if (typeof lastGamma === "number") {
+            res(lastGamma);
+            return;
+          }
+          // else set resolver to be called by handler
+          firstSampleResolve = res;
+          // fallback timeout (ms)
+          firstSampleTimer = setTimeout(() => {
+            if (firstSampleResolve) {
+              firstSampleResolve(lastGamma ?? 0);
+              firstSampleResolve = null;
+            }
+            firstSampleTimer = null;
+          }, 700);
+        });
+
+        const sample = await samplePromise;
+
+        // initialize filtered/baseline using sample
+        if (typeof sample === "number") {
+          filteredGamma = sample;
+          baselineGamma = sample; // initial baseline; calibrate() can be called later for better center
+        } else {
           filteredGamma = 0;
           baselineGamma = 0;
         }
 
+        enabled = true;
         resolve(true);
       });
     }
 
     function stopTilt() {
-      if (listening) {
-        window.removeEventListener("deviceorientation", handleOrientation, true);
-        listening = false;
-      }
+      removeListener();
       enabled = false;
-    }
-
-    function calibrateTilt() {
-      baselineGamma = lastGamma || 0;
+      lastGamma = null;
       filteredGamma = 0;
-      // small console hint useful for debugging
-      // console.log('Tilt calibrado baselineGamma=', baselineGamma);
     }
 
-    function handleOrientation(event) {
-      let gamma = event.gamma;
-      if (typeof gamma !== "number") return;
-      lastGamma = gamma;
-      // low-pass filter
-      filteredGamma = filteredGamma + (gamma - filteredGamma) * SMOOTHING;
+    // calibrate: average a few samples to set baseline (call after user action)
+    function calibrateTilt(samples = 6, msBetween = 60) {
+      return new Promise((resolve) => {
+        if (!listening || typeof lastGamma !== "number") {
+          // if we don't have samples, keep baseline as current lastGamma or 0
+          baselineGamma = typeof lastGamma === "number" ? lastGamma : 0;
+          resolve(baselineGamma);
+          return;
+        }
+
+        let collected = [];
+        let count = 0;
+        const collect = () => {
+          if (typeof lastGamma === "number") collected.push(lastGamma);
+          count++;
+          if (count >= samples) {
+            const sum = collected.reduce((a, b) => a + b, 0) || 0;
+            baselineGamma = collected.length ? sum / collected.length : lastGamma || 0;
+            // reset filtered so movement starts relative to new baseline
+            filteredGamma = baselineGamma;
+            resolve(baselineGamma);
+            return;
+          }
+          setTimeout(collect, msBetween);
+        };
+        collect();
+      });
     }
 
     function getTiltX() {
       if (!enabled) return 0;
       const delta = filteredGamma - baselineGamma;
       const clamped = clamp(delta, -MAX_TILT_ANGLE, MAX_TILT_ANGLE);
+      // small deadzone
+      if (Math.abs(clamped) < 1.2) return 0;
       return clamped / MAX_TILT_ANGLE;
     }
 
-    // Expose small API
     window.tiltControls = {
       init: initMobileTilt,
       stop: stopTilt,
@@ -617,21 +693,16 @@
 
     // Initialize tilt controls on mobile and calibrate the baseline
     try {
-      if (window.tiltControls) {
-        // call init (it returns a promise in our module)
-        const initResult = window.tiltControls.init();
-        if (initResult && typeof initResult.then === "function") {
-          initResult.then((granted) => {
-            // calibrate after permission granted/initialization
-            if (granted) window.tiltControls.calibrate();
-          });
-        } else {
-          // synchronous case
-          window.tiltControls.calibrate();
-        }
+      if (window.tiltControls && typeof window.tiltControls.init === "function") {
+        // init returns a Promise that resolves when first sample (or timeout) happens
+        window.tiltControls.init().then((granted) => {
+          if (granted && typeof window.tiltControls.calibrate === "function") {
+            // calibrate averaging a few samples for better center
+            window.tiltControls.calibrate();
+          }
+        });
       }
     } catch (err) {
-      // never block the game if tilt fails
       console.warn("Tilt init error", err);
     }
   }
@@ -700,18 +771,19 @@
 
     // If no keys are pressed, try mobile tilt input first; otherwise friction
     const noKey = !keys.left && !keys.right;
-    const tiltActive = window.tiltControls && window.tiltControls.isEnabled && window.tiltControls.isEnabled();
+    const tiltActive =
+      window.tiltControls &&
+      typeof window.tiltControls.isEnabled === "function" &&
+      window.tiltControls.isEnabled();
 
     if (noKey && tiltActive) {
       // Get tilt value -1..1
       const tiltX = window.tiltControls.getTiltX();
-      // Map tilt to a desired velocity and smoothly approach it (lerp).
+      // Map tilt to desired speed and smoothly approach it
       const desired = tiltX * p.maxSpeed;
-      // simple lerp factor for smoothness
       const LERP = 0.18;
       p.vx += (desired - p.vx) * LERP;
     } else if (noKey) {
-      // previous friction
       p.vx *= 0.9;
     }
 

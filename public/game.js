@@ -111,12 +111,115 @@
     });
   }
 
+  /* ===========================
+     NEW: Tilt controls for mobile
+     - Uses DeviceOrientation (gamma) to compute left/right input.
+     - Request permission on iOS when needed.
+     - Exposes API: window.tiltControls.init(), .calibrate(), .isEnabled(), .getTiltX()
+     - getTiltX() -> -1..1 (left..right)
+     =========================== */
+  (function () {
+    const MAX_TILT_ANGLE = 28; // grados que representan valor -1..1
+    const SMOOTHING = 0.12; // low-pass filter factor
+    const IOS_PERMISSION_REQUIRED =
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function";
+
+    let enabled = false;
+    let isMobile =
+      /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      detectPlatform() === "mobile";
+    let baselineGamma = 0;
+    let filteredGamma = 0;
+    let lastGamma = 0;
+    let listening = false;
+
+    function initMobileTilt() {
+      return new Promise(async (resolve) => {
+        if (!isMobile) {
+          enabled = false;
+          resolve(false);
+          return;
+        }
+
+        if (IOS_PERMISSION_REQUIRED) {
+          try {
+            const result = await DeviceOrientationEvent.requestPermission();
+            if (result !== "granted") {
+              console.warn("Permiso DeviceOrientation denegado");
+              enabled = false;
+              resolve(false);
+              return;
+            }
+          } catch (err) {
+            console.warn("Error pidiendo permiso DeviceOrientation:", err);
+            enabled = false;
+            resolve(false);
+            return;
+          }
+        }
+
+        if (!listening) {
+          window.addEventListener("deviceorientation", handleOrientation, true);
+          listening = true;
+          enabled = true;
+          filteredGamma = 0;
+          baselineGamma = 0;
+        }
+
+        resolve(true);
+      });
+    }
+
+    function stopTilt() {
+      if (listening) {
+        window.removeEventListener("deviceorientation", handleOrientation, true);
+        listening = false;
+      }
+      enabled = false;
+    }
+
+    function calibrateTilt() {
+      baselineGamma = lastGamma || 0;
+      filteredGamma = 0;
+      // small console hint useful for debugging
+      // console.log('Tilt calibrado baselineGamma=', baselineGamma);
+    }
+
+    function handleOrientation(event) {
+      let gamma = event.gamma;
+      if (typeof gamma !== "number") return;
+      lastGamma = gamma;
+      // low-pass filter
+      filteredGamma = filteredGamma + (gamma - filteredGamma) * SMOOTHING;
+    }
+
+    function getTiltX() {
+      if (!enabled) return 0;
+      const delta = filteredGamma - baselineGamma;
+      const clamped = clamp(delta, -MAX_TILT_ANGLE, MAX_TILT_ANGLE);
+      return clamped / MAX_TILT_ANGLE;
+    }
+
+    // Expose small API
+    window.tiltControls = {
+      init: initMobileTilt,
+      stop: stopTilt,
+      calibrate: calibrateTilt,
+      isEnabled: () => enabled && isMobile,
+      getTiltX,
+    };
+  })();
+  /* ===========================
+     END Tilt module
+     =========================== */
+
   async function loadLeaderboard() {
     if (!leaderboardList) return;
 
     try {
       const res = await apiFetch(
-        `/api/leaderboard?game=${encodeURIComponent(GAME_NAME)}&limit=7`,
+        `/api/leaderboard?game=${encodeURIComponent(GAME_NAME)}&limit=7`
       );
       if (!res.ok) {
         leaderboardList.innerHTML = `<div class="leaderboard-empty">No se pudo cargar.</div>`;
@@ -511,6 +614,26 @@
         alpha: rand(0.18, 0.35),
       });
     }
+
+    // Initialize tilt controls on mobile and calibrate the baseline
+    try {
+      if (window.tiltControls) {
+        // call init (it returns a promise in our module)
+        const initResult = window.tiltControls.init();
+        if (initResult && typeof initResult.then === "function") {
+          initResult.then((granted) => {
+            // calibrate after permission granted/initialization
+            if (granted) window.tiltControls.calibrate();
+          });
+        } else {
+          // synchronous case
+          window.tiltControls.calibrate();
+        }
+      }
+    } catch (err) {
+      // never block the game if tilt fails
+      console.warn("Tilt init error", err);
+    }
   }
 
   function spawnPlatformsIfNeeded() {
@@ -552,29 +675,43 @@
               layer.name,
               rand(20, W - 70),
               highestY - rand(40, 110),
-              obstacleType,
-            ),
+              obstacleType
+            )
           );
         }
       }
     }
 
     game.platforms = game.platforms.filter(
-      (p) => p.y < game.cameraY + H + 120 && !p.removed,
+      (p) => p.y < game.cameraY + H + 120 && !p.removed
     );
 
     game.obstacles = game.obstacles.filter(
-      (o) => o.y < game.cameraY + H + 150 && o.y > game.cameraY - 900,
+      (o) => o.y < game.cameraY + H + 150 && o.y > game.cameraY - 900
     );
   }
 
   function handleInput() {
     const p = game.player;
 
+    // Desktop keys/buttons still work as before
     if (keys.left) p.vx -= p.speed;
     if (keys.right) p.vx += p.speed;
 
-    if (!keys.left && !keys.right) {
+    // If no keys are pressed, try mobile tilt input first; otherwise friction
+    const noKey = !keys.left && !keys.right;
+    const tiltActive = window.tiltControls && window.tiltControls.isEnabled && window.tiltControls.isEnabled();
+
+    if (noKey && tiltActive) {
+      // Get tilt value -1..1
+      const tiltX = window.tiltControls.getTiltX();
+      // Map tilt to a desired velocity and smoothly approach it (lerp).
+      const desired = tiltX * p.maxSpeed;
+      // simple lerp factor for smoothness
+      const LERP = 0.18;
+      p.vx += (desired - p.vx) * LERP;
+    } else if (noKey) {
+      // previous friction
       p.vx *= 0.9;
     }
 
@@ -953,7 +1090,7 @@
     ctx.fillText("Pulsa Jugar o ENTER", W / 2, H / 2 + 35);
 
     ctx.font = "14px Arial";
-    ctx.fillText("Toca izquierda o derecha en móvil", W / 2, H / 2 + 68);
+    ctx.fillText("Toca izquierda o derecha en móvil o inclina el teléfono", W / 2, H / 2 + 68);
     ctx.textAlign = "left";
   }
 

@@ -1,0 +1,49 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_PATH }}
+
+            # asegurar rama y traer cambios
+            git fetch --all
+            git reset --hard origin/main
+
+            # composer
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            # build assets (si usas Vite)
+            npm ci
+            npm run build
+
+            # migraciones + cache
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            # permisos (ajusta si no usas www-data)
+            chown -R www-data:www-data storage bootstrap/cache || true
+            chmod -R 775 storage bootstrap/cache || true
+
+            # recarga servicios
+            systemctl reload nginx || true
+            systemctl reload php8.4-fpm || true
